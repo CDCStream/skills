@@ -28,7 +28,8 @@ what changed in their content this period.
 
 1. Competitors and their profile URLs per platform. Do not guess handles —
    skip a platform the user did not provide.
-2. Period (default: last 7 days) and posts to pull per platform (default 10).
+2. Period (default: last 7 days) and posts to pull per platform (default 10;
+   Facebook `profile-posts` accepts at most `limit=4`).
 3. Previous digest file, if any, to report week-over-week change.
 
 ## Credit estimate — show before running
@@ -55,7 +56,8 @@ platforms, check `GET /v1/account/balance` (free), and ask to confirm.
   `youtube_channel_videos`, `twitter_user_tweets`, `threads_user_posts`,
   `linkedin_company_posts`, `facebook_profile_posts`.
 - **REST:** `GET https://api.captapi.com<path>?url=<profile URL>&limit=<N>`
-  with header `Authorization: Bearer $CAPTAPI_API_KEY`.
+  with header `Authorization: Bearer $CAPTAPI_API_KEY`. Use `limit=4` for
+  Facebook; a higher value is a 422 validation error.
 
 Failed calls cost 0 credits. Retry a `retryable: true` error once; record a
 `retryable: false` error as the answer for that platform.
@@ -63,16 +65,19 @@ Failed calls cost 0 credits. Retry a `retryable: true` error once; record a
 ## Steps
 
 1. **Pull listings** for every competitor × platform the user provided.
-2. **Filter to the period** by each post's `publishedAt`. For X, keep the
-   tweets inside the period and note that the source is a popularity-ranked
-   set.
-3. **Score each post** against its own account on the same platform:
+2. **Filter to the period** by each post's `publishedAt` — a listing returns
+   the newest posts however old they are. Report "no posts in this period"
+   separately from a failed call. For X, keep the tweets inside the period
+   and note that the source is a popularity-ranked set.
+3. **Merge cross-posts:** posts from one competitor on different platforms
+   with timestamps a few minutes apart and overlapping text are one item.
+4. **Score each post** against its own account on the same platform:
    `engagement = likes + comments (+ shares/reposts when present)`;
    `lift = engagement / median engagement of that account's pulled posts`.
    Posts with lift ≥ 2 are "outperformers".
-4. **Tag each post** with format (short video, long video, image, carousel,
+5. **Tag each post** with format (short video, long video, image, carousel,
    text, link) and a 2–4 word topic you infer from the caption.
-5. **Compare with the previous digest** if provided: posting frequency change,
+6. **Compare with the previous digest** if provided: posting frequency change,
    new topics, formats dropped or added.
 
 ## Digest format
