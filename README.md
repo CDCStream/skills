@@ -17,14 +17,14 @@ endpoint behind each claim, and marks interpretations as needing human review.
 ## Install
 
 ```bash
-npx skills add captapi/skills
+npx skills add CDCStream/skills
 ```
 
 List them first, or install one:
 
 ```bash
-npx skills add captapi/skills --list
-npx skills add captapi/skills --skill creator-vetting-transcripts
+npx skills add CDCStream/skills --list
+npx skills add CDCStream/skills --skill creator-vetting-transcripts
 ```
 
 ## Connect Captapi
